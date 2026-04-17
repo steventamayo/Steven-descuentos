@@ -1,40 +1,462 @@
-<!doctype html>
-<html lang="en">
- <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Loading...</title>
-  <style>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Sistema de Cortes Stevenca24</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        :root {
+            --bg: #0f172a;
+            --card: #1e293b;
+            --accent: #2563eb;
+            --green: #22c55e;
+            --text: #f1f5f9;
+            --orange: #f59e0b;
+            --red: #ef4444;
+        }
+
         body {
-            margin: 0;
-            padding: 0;
-            overflow: hidden;
-            height: 100vh;
+            margin: 0; font-family: 'Segoe UI', sans-serif;
+            background: var(--bg); color: var(--text); padding-bottom: 50px;
         }
-        iframe {
-            width: 100%;
-            height: 100%;
+
+        header {
+            background: var(--card); padding: 15px; text-align: center;
+            border-bottom: 2px solid var(--accent); font-weight: 800;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+
+       .btn-hist {
+            background: var(--accent);
             border: none;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 11px;
+            font-weight: 700;
+            cursor: pointer;
         }
+
+   .container { padding: 15px; max-width: 700px; margin: auto; }
+
+   .grid-menu {
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+            gap: 8px; margin-bottom: 20px;
+        }
+
+   .tipo-btn {
+            background: var(--card); border: 1px solid #334155;
+            padding: 12px 5px; border-radius: 10px; text-align: center;
+            cursor: pointer; font-size: 10px; font-weight: 700;
+            text-transform: uppercase; color: #94a3b8; transition: 0.2s;
+        }
+
+   .tipo-btn.active { background: var(--accent); border-color: white; color: white; }
+
+   .card {
+            background: var(--card); padding: 20px; border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.4); margin-bottom: 20px;
+        }
+
+   .title-sec { font-size: 13px; font-weight: 800; color: var(--accent); margin-bottom: 15px; text-transform: uppercase; }
+
+   .input-row { display: grid; grid-template-columns: 1fr 1fr 0.5fr; gap: 10px; margin-bottom: 10px; }
+
+        label { display: block; font-size: 10px; color: #94a3b8; margin-bottom: 5px; font-weight: bold; }
+
+        input, textarea {
+            width: 100%; background: #0f172a; border: 1px solid #334155;
+            border-radius: 10px; color: var(--green); padding: 12px;
+            font-size: 16px; font-weight: bold; box-sizing: border-box; outline: none;
+        }
+
+   .btn-main {
+            width: 100%; padding: 14px; border: none; border-radius: 12px;
+            font-weight: 800; cursor: pointer; display: flex;
+            align-items: center; justify-content: center; gap: 10px;
+            color: white; text-transform: uppercase; margin-top: 10px;
+        }
+
+   .btn-calc { background: var(--accent); }
+   .btn-wa { background: var(--green); margin-top: 15px; }
+   .btn-clear { background: var(--red); margin-top: 10px; }
+
+   .res-card {
+            background: #1e2945; border-radius: 15px; padding: 15px;
+            margin-top: 15px; border-left: 5px solid var(--accent);
+        }
+   .res-header { font-size: 14px; font-weight: 800; margin-bottom: 10px; color: white; border-bottom: 1px solid #334155; padding-bottom: 5px;}
+   .res-item { display: flex; justify-content: space-between; padding: 5px 0; border-bottom: 1px solid #ffffff05; }
+   .res-info b { display: block; font-size: 11px; color: #94a3b8; }
+   .res-info span { font-size: 14px; font-weight: 700; }
+   .res-cant { font-weight: 800; color: var(--accent); background: white; padding: 2px 6px; border-radius: 4px; font-size: 12px;}
+
+   .total-material {
+            background: #1e2945;
+            padding: 15px;
+            border-radius: 15px;
+            margin-top: 15px;
+            border-left: 5px solid var(--orange);
+        }
+   .total-header {
+            font-size: 13px;
+            font-weight: 800;
+            color: var(--orange);
+            margin-bottom: 12px;
+            text-transform: uppercase;
+        }
+   .perfil-row {
+            display: grid;
+            grid-template-columns: 1fr auto auto;
+            gap: 10px;
+            padding: 8px 0;
+            border-bottom: 1px solid #ffffff05;
+            align-items: center;
+        }
+   .perfil-nombre { font-size: 12px; font-weight: 700; color: #f1f5f9; }
+   .perfil-cm { font-size: 11px; color: #94a3b8; }
+   .perfil-pzas {
+            font-weight: 800;
+            color: var(--orange);
+            background: #0f172a;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 12px;
+        }
+
+    /* Modal Historial */
+   .modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.8);
+            z-index: 1000;
+            padding: 20px;
+            box-sizing: border-box;
+            overflow-y: auto;
+        }
+   .modal-content {
+            background: var(--card);
+            max-width: 600px;
+            margin: 20px auto;
+            border-radius: 15px;
+            padding: 20px;
+        }
+   .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            border-bottom: 1px solid #334155;
+            padding-bottom: 10px;
+        }
+   .modal-title { font-size: 16px; font-weight: 800; color: var(--accent); }
+   .btn-close {
+            background: var(--red);
+            border: none;
+            color: white;
+            width: 30px; height: 30px;
+            border-radius: 50%;
+            font-weight: 800;
+            cursor: pointer;
+        }
+   .hist-item {
+            background: #0f172a;
+            padding: 12px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            border-left: 3px solid var(--accent);
+        }
+   .hist-fecha { font-size: 10px; color: #94a3b8; margin-bottom: 5px; }
+   .hist-tipo { font-size: 12px; font-weight: 800; color: var(--accent); margin-bottom: 8px; }
+   .hist-medidas { font-size: 11px; margin-bottom: 8px; }
+   .hist-actions { display: flex; gap: 8px; }
+   .btn-small {
+            padding: 6px 10px;
+            border: none;
+            border-radius: 6px;
+            font-size: 10px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+   .btn-load { background: var(--green); color: white; }
+   .btn-del { background: var(--red); color: white; }
     </style>
- </head>
- <body>
-  <iframe id="contentFrame" src="https://app.emergent.sh/loading-preview?host=aluminio-calc.preview.emergentagent.com" allowfullscreen></iframe>
-  <script>
-        // Listen for messages from the iframe
-        window.addEventListener('message', function(event) {
+</head>
+<body>
 
-        	console.log(event.origin);
-            // Optional: Add origin check for security
-            // if (!['https://dev.emergentagent.com', 'https://app.emergent.sh'].includes(event.origin)) return;
+<header>
+    <span>馃搻 STEVENCA24</span>
+    <button class="btn-hist" onclick="mostrarHistorial()">馃搵 HISTORIAL</button>
+</header>
 
-            if (event.data && event.data.type === 'reload') {
-                const iframe = document.getElementById('contentFrame');
-                window.location.reload();
-            }
+<div class="container">
+    <div class="grid-menu" id="grid-botones"></div>
 
-            if (event.data && event.data.type === 'url') {
-                const iframe = document.getElementById('contentFrame');
+    <div class="card">
+        <div class="title-sec">C谩lculo 1 x 1</div>
+        <div class="input-row">
+            <div><label>ANCHO</label><input type="number" id="ancho-1" placeholder="0"></div>
+            <div><label>ALTO</label><input type="number" id="alto-1" placeholder="0"></div>
+            <div><label>CANT.</label><input type="number" id="cant-1" value="1"></div>
+        </div>
+        <button class="btn-main btn-calc" onclick="procesar(1)">Calcular Medida</button>
+    </div>
+
+    <div class="card">
+        <div class="title-sec">C谩lculos M煤ltiples</div>
+        <textarea id="input-masivo" rows="4" placeholder="Ancho x Alto x Cantidad"></textarea>
+        <button class="btn-main btn-calc" onclick="procesar(2)">Calcular Todo</button>
+    </div>
+
+    <div id="res-area"></div>
+    <div id="total-area"></div>
+
+    <button class="btn-main btn-wa" onclick="enviarWhatsApp()">ENVIAR POR WHATSAPP</button>
+</div>
+
+<!-- Modal Historial -->
+<div id="modal-hist" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <div class="modal-title">馃搵 HISTORIAL DE C脕LCULOS</div>
+            <button class="btn-close" onclick="cerrarHistorial()">X</button>
+        </div>
+        <div id="hist-lista"></div>
+        <button class="btn-main btn-clear" onclick="borrarHistorial()">BORRAR TODO EL HISTORIAL</button>
+    </div>
+</div>
+
+<script>
+let tipoSeleccionado = "";
+let listaResultados = [];
+let desglosePerfiles = {};
+
+const s = {
+    vAbierto2: (A, H) => ({ Riel: `2 x ${A}`, Jamba: `2 x ${H-0.8}`, Vertical: `4 x ${H-2.7}`, Horizontal: `4 x ${(A-11)/2}`, Malla: `2 x ${(A-4.4)/2} x ${H-2.5}`, Vidrios: `2 x ${(A-8.4)/2} x ${H-9}` }),
+    vAbierto3: (A, H) => ({ Riel: `2 x ${A}`, Jamba: `2 x ${H-0.8}`, Vertical: `6 x ${H-2.7}`, Horizontal: `6 x ${(A-14)/3}`, Malla: `2 x ${(A-4.3)/3} x ${H-2.5}`, Vidrios: `3 x ${(A-10)/3} x ${H-9}` }),
+    vAbierto4: (A, H) => ({ Riel: `2 x ${A}`, Jamba: `2 x ${H-0.8}`, Vertical: `8 x ${H-2.7}`, Horizontal: `8 x ${(A-20)/4}`, Malla: `4 x ${(A-6.5)/4} x ${H-2.5}`, Vidrios: `4 x ${(A-14.5)/4} x ${H-9}` }),
+    vCerrado2: (A, H) => ({ Riel: `2 x ${A}`, Jamba: `2 x ${H-0.8}`, Vertical: `4 x ${H-2.7}`, Horizontal: `4 x ${(A-13.4)/2}`, Malla: `2 x ${(A-5.5)/2} x ${H-2.5}`, Vidrios: `2 x ${(A-10.8)/2} x ${H-9}` }),
+    vCerrado3: (A, H) => ({ Riel: `2 x ${A}`, Jamba: `2 x ${H-0.8}`, Vertical: `6 x ${H-2.7}`, Horizontal: `6 x ${(A-17)/3}`, Malla: `2 x ${(A-5.5)/3} x ${H-2.5}`, Vidrios: `3 x ${(A-13)/3} x ${H-9}` }),
+    vCerrado4: (A, H) => ({ Riel: `2 x ${A}`, Jamba: `2 x ${H-0.8}`, Vertical: `8 x ${H-2.7}`, Horizontal: `8 x ${(A-24.8)/4}`, Malla: `4 x ${(A-8.5)/4} x ${H-2.5}`, Vidrios: `4 x ${(A-20)/4} x ${H-9}` }),
+    puerta: (A, H) => ({ "Riel Superior": `1 x ${A}`, "Riel Inferior": `1 x ${A}`, "Jamba Marco": `2 x ${H-1.5}`, "Jamba Chapa": `2 x ${H-2.5}`, "Entre Cierre": `2 x ${H-2.5}`, "Horizontal Superior": `2 x ${(A-16.4)/2}`, "Horizontal Inferior": `2 x ${(A-16.4)/2}`, Malla: `2 x ${A/2} x ${H-3.5}`, Vidrios: `2 x ${(A-12.4)/2} x ${H-10}` }),
+    cortina: (A, H) => ({ "Riel Superior": `1 x ${A}`, "Riel Inferior": `1 x ${A-0.5}`, Jamba: `2 x ${H-4.5}`, Vertical: `4 x ${H-6}`, "Horizontal Superior": `2 x ${(A+6)/2}`, "Horizontal Inferior": `2 x ${(A+6)/2}`, Toallero: `2 x ${(A-12)/2}`, "Porta Toallero": `2 x 10`, Acrilicos: `2 x ${(A-7)/2} x ${H-9.5}` }),
+    europeo2: (A, H) => ({ Riel: `2 x ${A}`, Jamba: `2 x ${H}`, Vertical: `4 x ${H-7}`, Horizontal: `4 x ${A/2}`, Vidrios: `2 x ${(A-21)/2} x ${H-17.5}` }),
+    europeo3: (A, H) => ({ Riel: `2 x ${A}`, Jamba: `2 x ${H}`, Vertical: `6 x ${H-7}`, Horizontal: `6 x ${(A+6.5)/3}`, Vidrios: `3 x ${(A-31.5)/3} x ${H-17.5}` }),
+    europeo4: (A, H) => ({ Riel: `2 x ${A}`, Jamba: `2 x ${H}`, Vertical: `8 x ${H-7}`, Horizontal: `8 x ${(A+7)/4}`, Vidrios: `4 x ${(A-42.2)/4} x ${H-17.5}` }),
+    eurolife2: (A, H) => ({ Riel: `2 x ${A}`, Jamba: `2 x ${H}`, Vertical: `4 x ${H-4}`, Horizontal: `4 x ${(A+2)/2}`, Malla: `2 x ${A/2} x ${H-2.5}`, Vidrios: `2 x ${(A-18)/2} x ${H-13.5}` }),
+    eurolife3: (A, H) => ({ Riel: `2 x ${A}`, Jamba: `2 x ${H}`, Vertical: `6 x ${H-4}`, Horizontal: `6 x ${(A+5)/3}`, Malla: `2 x ${(A+5)/3} x ${H-2.5}`, Vidrios: `3 x ${(A-28.5)/3} x ${H-13.5}` }),
+    eurolife4: (A, H) => ({ Riel: `2 x ${A}`, Jamba: `2 x ${H}`, Vertical: `8 x ${H-4}`, Horizontal: `8 x ${(A+9)/4}`, Malla: `4 x ${(A+9)/4} x ${H-2.5}`, Vidrios: `4 x ${(A-38)/4} x ${H-13.5}` }),
+    abatible: (A, H) => ({
+        "Marco Vertical": `2 x ${H}`,
+        "Marco Horizontal": `1 x ${A-5}`,
+        "Tubo Vertical": `2 x ${H-4}`,
+        "Tubo Horizontal": `3 x ${A-13.4}`,
+        "U con Ala Alto": `4 x ${(H-19.2)/2}`,
+        "U con Ala Ancho": `4 x ${A-15.4}`,
+        Vidrios: `1 x ${(H-20.4)/2} x ${A-14.2}`
+    })
+};
+
+function init() {
+    let html = "";
+    for (let k in s) html += `<div class="tipo-btn" id="btn-${k}" onclick="sel('${k}')">${k}</div>`;
+    document.getElementById("grid-botones").innerHTML = html;
+}
+
+function sel(t) {
+    tipoSeleccionado = t;
+    document.querySelectorAll('.tipo-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById('btn-'+t).classList.add('active');
+}
+
+function procesar(modo) {
+    if (!tipoSeleccionado) return alert("Seleccione un sistema");
+    desglosePerfiles = {};
+
+    if (modo === 1) {
+        let A = parseFloat(document.getElementById("ancho-1").value);
+        let H = parseFloat(document.getElementById("alto-1").value);
+        let C = parseInt(document.getElementById("cant-1").value) || 1;
+        if (A > 0 && H > 0) {
+            listaResultados = [{ A, H, C, r: s[tipoSeleccionado](A, H) }];
+            calcularMaterial();
+            render();
+            guardarEnHistorial();
+        }
+    } else {
+        const lineas = document.getElementById("input-masivo").value.split("\n");
+        listaResultados = [];
+        lineas.forEach(l => {
+            let p = l.toLowerCase().split(/[x*]/).map(n => parseFloat(n.trim()));
+            if (p.length >= 2) listaResultados.push({ A: p[0], H: p[1], C: p[2] || 1, r: s[tipoSeleccionado](p[0], p[1]) });
+        });
+        if (listaResultados.length > 0) {
+            calcularMaterial();
+            render();
+            guardarEnHistorial();
+        }
+    }
+}
+
+function calcularMaterial() {
+    desglosePerfiles = {};
+    const EXCLUIR = ["vidrios", "acrilicos"];
+
+    const GRUPO_TUBO = ["tubo vertical", "tubo horizontal"];
+    const GRUPO_UALA = ["u con ala alto", "u con ala ancho"];
+
+    listaResultados.forEach(res => {
+        for (let k in res.r) {
+            if (EXCLUIR.includes(k.toLowerCase())) continue;
+
+            let partes = res.r[k].split(" x ");
+            let cantidad = parseInt(partes[0]) || 0;
+            let medidas = partes.slice(1).map(m => parseFloat(m) || 0);
+            let sumaMedida = medidas.reduce((a, b) => a + b, 0);
+            let totalCm = cantidad * sumaMedida * res.C;
+
+            let nombreGrupo = k;
+            let kLower = k.toLowerCase();
+
+            if (GRUPO_TUBO.includes(kLower)) nombreGrupo = "Tubo";
+            else if (GRUPO_UALA.includes(kLower)) nombreGrupo = "U con Ala";
+
+            if (!desglosePerfiles[nombreGrupo]) desglosePerfiles[nombreGrupo] = 0;
+            desglosePerfiles[nombreGrupo] += totalCm;
+        }
+    });
+}
+
+function render() {
+    let html = "";
+    listaResultados.forEach((res, i) => {
+        html += `<div class="res-card"><div class="res-header">#${i+1} - ${res.A} x ${res.H} (Cant: ${res.C})</div>`;
+        for (let k in res.r) {
+            let d = res.r[k].split(" x ");
+            html += `<div class="res-item"><div class="res-info"><b>${k}</b><span>${d.slice(1).join(" x ")}</span></div><div class="res-cant">${parseInt(d[0]) * res.C}</div></div>`;
+        }
+        html += `</div>`;
+    });
+    document.getElementById("res-area").innerHTML = html;
+
+    if (Object.keys(desglosePerfiles).length > 0) {
+        let htmlTotal = `<div class="total-material"><div class="total-header">PIEZAS DE 640cm POR PERFIL</div>`;
+        for (let perfil in desglosePerfiles) {
+            let cm = desglosePerfiles[perfil];
+            let pzas = Math.ceil(cm / 640);
+            htmlTotal += `
+                <div class="perfil-row">
+                    <div class="perfil-nombre">${perfil}</div>
+                    <div class="perfil-cm">${cm.toFixed(1)} cm</div>
+                    <div class="perfil-pzas">${pzas} pzas</div>
+                </div>`;
+        }
+        htmlTotal += `</div>`;
+        document.getElementById("total-area").innerHTML = htmlTotal;
+    } else {
+        document.getElementById("total-area").innerHTML = "";
+    }
+}
+
+function guardarEnHistorial() {
+    let historial = JSON.parse(localStorage.getItem('stevenca24_historial') || '[]');
+    let entrada = {
+        fecha: new Date().toLocaleString('es-EC'),
+        sistema: tipoSeleccionado,
+        medidas: listaResultados.map(r => `${r.A}x${r.H} (x${r.C})`).join(', '),
+        perfiles: {...desglosePerfiles},
+        datos: JSON.parse(JSON.stringify(listaResultados))
+    };
+    historial.unshift(entrada);
+    if (historial.length > 20) historial = historial.slice(0, 20);
+    localStorage.setItem('stevenca24_historial', JSON.stringify(historial));
+}
+
+function mostrarHistorial() {
+    let historial = JSON.parse(localStorage.getItem('stevenca24_historial') || '[]');
+    let html = '';
+
+    if (historial.length === 0) {
+        html = '<div style="text-align:center;color:#94a3b8;padding:20px">No hay c谩lculos guardados</div>';
+    } else {
+        historial.forEach((h, i) => {
+            html += `
+                <div class="hist-item">
+                    <div class="hist-fecha">${h.fecha}</div>
+                    <div class="hist-tipo">${h.sistema}</div>
+                    <div class="hist-medidas">${h.medidas}</div>
+                    <div class="hist-actions">
+                        <button class="btn-small btn-load" onclick="cargarHistorial(${i})">CARGAR</button>
+                        <button class="btn-small btn-del" onclick="borrarItemHistorial(${i})">BORRAR</button>
+                    </div>
+                </div>`;
+        });
+    }
+
+    document.getElementById('hist-lista').innerHTML = html;
+    document.getElementById('modal-hist').style.display = 'block';
+}
+
+function cerrarHistorial() {
+    document.getElementById('modal-hist').style.display = 'none';
+}
+
+function cargarHistorial(index) {
+    let historial = JSON.parse(localStorage.getItem('stevenca24_historial') || '[]');
+    let h = historial[index];
+    if (!h) return;
+
+    tipoSeleccionado = h.sistema;
+    listaResultados = h.datos;
+    desglosePerfiles = h.perfiles;
+
+    document.querySelectorAll('.tipo-btn').forEach(b => b.classList.remove('active'));
+    if (document.getElementById('btn-'+tipoSeleccionado)) {
+        document.getElementById('btn-'+tipoSeleccionado).classList.add('active');
+    }
+
+    render();
+    cerrarHistorial();
+}
+
+function borrarItemHistorial(index) {
+    let historial = JSON.parse(localStorage.getItem('stevenca24_historial') || '[]');
+    historial.splice(index, 1);
+    localStorage.setItem('stevenca24_historial', JSON.stringify(historial));
+    mostrarHistorial();
+}
+
+function borrarHistorial() {
+    if (confirm('驴Borrar todo el historial?')) {
+        localStorage.removeItem('stevenca24_historial');
+        mostrarHistorial();
+    }
+}
+
+function enviarWhatsApp() {
+    if (!listaResultados.length) return;
+    let t = `*馃搻 STEVENCA24 - REPORTE*\n*Sistema:* ${tipoSeleccionado}\n\n`;
+    listaResultados.forEach((res, i) => {
+        t += `*${i+1}) ${res.A}x${res.H} (CANT: ${res.C})*\n`;
+        for (let k in res.r) t += `鈥� ${k}: ${res.r[k]}\n`;
+        t += `\n`;
+    });
+    t += `*PIEZAS DE 640cm POR PERFIL:*\n`;
+    for (let perfil in desglosePerfiles) {
+        let cm = desglosePerfiles[perfil];
+        let pzas = Math.ceil(cm / 640);
+        t += `鈥� ${perfil}: ${pzas} pzas (${cm.toFixed(1)}cm)\n`;
+    }
+    window.open("https://wa.me/?text=" + encodeURIComponent(t));
+}
+
+init();
+</script>
+
+</body>
+</html>                const iframe = document.getElementById('contentFrame');
                 window.open(event.data.url, '_blank');
             }
         });
